@@ -1,0 +1,87 @@
+name: Next.js Build and Release
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Проверка кода
+        uses: actions/checkout@v2
+
+      - name: Настройка среды Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Кэширование зависимостей
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Установка зависимостей
+        run: npm ci
+
+      - name: Сборка проекта
+        run: npm run build
+
+      - name: Сборка сервера
+        run: tsc server.ts
+
+      - name: Создание файла readme.txt
+        run: echo 'Привет это билд helpfront, если тебе как то достался этот билд, то удали его пж. Если ты такая тварь и решил(-а) запустить его то пропиши node server.js. By hoprik' > readme.txt
+
+      - name: Архивирование артефактов (zip)
+        run: zip -r ./build-number-${{ github.run_number }}.zip . -x 'node_modules/*' -x 'server.ts' -x 'settings.zip'
+
+      - name: Создание релиза
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Билд helfront №${{ github.run_number }}
+          body: Это ${{ github.run_number }} билд helpfront! Смотри больше подробностей в коммите
+          draft: false
+          prerelease: false
+
+      - name: Загрузка файла релиза (zip)
+        id: upload-release-asset-zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build-number-${{ github.run_number }}.zip
+          asset_name: build-number-${{ github.run_number }}.zip
+          asset_content_type: application/zip
+
+      - name: Отправка сообщения в Telegram при пуше - hoprik
+        uses: appleboy/telegram-action@master
+        with:
+          to: 1579871159
+          token: 7368989978:AAG8EkXzEeDcRsS447iAy58XPgk-SJQg7Rw
+          message: |
+            Сбилдился новый билд helpfront! 
+            Его ссылка https://github.com/Defolto/help-front-finally/releases/tag/${{ github.run_number }}
+            
+            #helpfrontBuild
+
+      - name: send default message
+        uses: appleboy/telegram-action@master
+        with:
+          to: 1579871159
+          token: 7368989978:AAG8EkXzEeDcRsS447iAy58XPgk-SJQg7Rw
+          message: |
+            Сбилдился новый билд helpfront! 
+            Его ссылка https://github.com/Defolto/help-front-finally/releases/tag/${{ github.run_number }}
+            
+            #helpfrontBuild

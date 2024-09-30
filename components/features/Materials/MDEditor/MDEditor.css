@@ -1,0 +1,25 @@
+.md-editor {
+    --md-color: var(--white-color);
+    --md-hover-color: var(--red-color);
+    --md-bk-color: var(--second-bg-color);
+    --md-bk-color-outstand: var(--red-color);
+    --md-bk-hover-color: var(--red-color);
+    --md-border-color: var(--gray-color);
+    --md-border-hover-color:var(--red-color);
+    --md-border-active-color: var(--red-color);
+    --md-modal-mask: var(--first-bg-color);
+    --md-modal-shadow: var(--first-bg-color);
+    --md-scrollbar-bg-color: var(--gray-color);
+    --md-scrollbar-thumb-color: var(--white-color);
+    --md-scrollbar-thumb-hover-color: var(--first-bg-color);
+    --md-scrollbar-thumb-active-color:var(--first-bg-color);
+    --md-theme-code-block-bg-color: var(--first-bg-color)
+}
+
+.ͼ1i{
+    color: var(--white-color);
+}
+
+.cm-content{
+    color: var(--white-color);
+}
